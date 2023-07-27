@@ -1,0 +1,7 @@
+{
+    "rust-analyzer.linkedProjects": [
+        "./interacto/Cargo.toml",
+        "./interacto/Cargo.toml"
+    ],
+    "rust-analyzer.showUnlinkedFileNotification": false
+}

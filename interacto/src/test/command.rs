@@ -72,9 +72,7 @@ mod command {
 
     #[test]
     fn command_status_after_creation() {
-        let mut spec = StubCmd::default();
-        let cmd = spec.as_command();
-        assert_eq!(cmd.get_status(), CmdStatus::Created);
+        assert_eq!(StubCmd::default().as_command().get_status(), CmdStatus::Created);
     }
 
     #[test]
@@ -119,9 +117,7 @@ mod command {
 
     #[test]
     fn command_can_do_it_when_can_do() {
-        let mut spec = StubCmd::default();
-        let mut cmd = spec.as_command();
-        assert_eq!(cmd.execute(), true);
+        assert_eq!(StubCmd::default().as_command().execute(), true);
     }
 
     #[test]
@@ -142,9 +138,7 @@ mod command {
 
     #[test]
     fn command_had_effect_when_not_done_and_created() {
-        let mut spec = StubCmd::default();
-        let cmd = spec.as_command();
-        assert_eq!(cmd.had_effect(), false);
+        assert_eq!(StubCmd::default().as_command().had_effect(), false);
     }
 
     #[test]
@@ -209,9 +203,7 @@ mod command {
 
     #[test]
     fn is_done_when_created() {
-        let mut spec = StubCmd::default();
-        let cmd = spec.as_command();
-        assert_eq!(cmd.is_done(), false);
+        assert_eq!(StubCmd::default().as_command().is_done(), false);
     }
 
     #[test]

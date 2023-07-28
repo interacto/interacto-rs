@@ -19,10 +19,7 @@
 
     #[test]
     fn can_do_ok_cmd() {
-        let mut spec = AnonCmd::new(|| {});
-        let cmd = spec.as_command();
-
-        assert_eq!(cmd.can_execute(), true);
+        assert_eq!(AnonCmd::new(|| {}).as_command().can_execute(), true);
     }
 
     #[test]

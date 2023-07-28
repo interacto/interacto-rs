@@ -162,6 +162,10 @@ pub trait CustomCmd {
      * This method is automatically called by 'execute' and must not be called explicitly.
      */
     fn execution(&mut self);
+
+    // fn as_command(&self) -> Command<Self> {
+    //     Command::new(self)
+    // }
 }
 
 pub trait UndoableCommand: CustomCmd + Undoable {}

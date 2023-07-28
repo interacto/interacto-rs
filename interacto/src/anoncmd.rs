@@ -11,5 +11,30 @@
  * You should have received a copy of the GNU General Public License
  * along with Interacto.  If not, see <https://www.gnu.org/licenses/>.
  */
-mod command;
-mod anoncmd;
+use crate::command::CustomCmd;
+
+/**
+ * An anonymous command that takes an anonymous function as a parameter corresponding to the command to execute.
+ * The goal of this command is to avoid the creation of a command class for a small command.
+ */
+pub struct AnonCmd<'a> {
+    exec: Box<dyn 'a + FnMut() -> ()>
+}
+
+impl<'a> AnonCmd<'a> {
+    pub fn new(fct: impl 'a + FnMut() -> ()) -> Self {
+        Self {
+            exec: Box::new(fct)
+        }
+    }
+}
+
+impl<'a> CustomCmd for AnonCmd<'a> {
+    fn execution(&mut self) {
+        (self.exec)()
+    }
+
+    fn can_execute(&self) -> bool {
+        true
+    }
+}

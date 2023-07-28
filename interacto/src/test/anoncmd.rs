@@ -15,11 +15,12 @@
  mod anoncmd {
     use std::sync::{Mutex, Arc};
 
-    use crate::{anoncmd::AnonCmd, command::{CustomCmd, Command}};
+    use crate::{anoncmd::AnonCmd, command::CustomCmd};
 
     #[test]
     fn can_do_ok_cmd() {
-        let cmd = AnonCmd::new(|| {});
+        let mut spec = AnonCmd::new(|| {});
+        let cmd = spec.as_command();
 
         assert_eq!(cmd.can_execute(), true);
     }
@@ -28,17 +29,19 @@
     fn execute() {
         let ok = Arc::new(Mutex::new(false));
 
-        let mut cmd = Command::new(AnonCmd::new(|| {
+        let mut spec = AnonCmd::new(|| {
             let mut data = ok.lock().unwrap();
             *data = true;
-        }));
+        });
+        let mut cmd = spec.as_command();
         cmd.execute();
         assert_eq!(*ok.lock().unwrap(), true);
     }
 
     #[test]
     fn had_effect() {
-        let mut cmd = Command::new(AnonCmd::new(|| {}));
+        let mut spec = AnonCmd::new(|| {});
+        let mut cmd = spec.as_command();
         cmd.execute();
         cmd.done();
         assert_eq!(cmd.had_effect(), true);

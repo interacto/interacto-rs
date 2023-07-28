@@ -37,13 +37,13 @@ pub enum CmdStatus {
  * It contains statements to execute to perform the command.
  * The interface Undoable can be used to add undo/redo features to a command.
  */
-pub struct Command<T: CustomCmd> {
+pub struct Command<'a, T: CustomCmd<'a>> {
     status: CmdStatus,
-    pub child: T
+    pub child: &'a mut T
 }
 
-impl<T: CustomCmd> Command<T> {
-    pub fn new(child_cmd: T) -> Self {
+impl<'a, T: CustomCmd<'a>> Command<'a, T> {
+    pub fn new(child_cmd: &'a mut T) -> Self {
         Self {
             status: CmdStatus::Created,
             child: child_cmd
@@ -51,7 +51,7 @@ impl<T: CustomCmd> Command<T> {
     }
 }
 
-impl<T: CustomCmd> Command<T> {
+impl<'a, T: CustomCmd<'a>> Command<'a, T> {
     pub fn get_status(&self) -> CmdStatus {
         self.status
     }
@@ -144,7 +144,7 @@ impl<T: CustomCmd> Command<T> {
     }
 }
 
-pub trait CustomCmd {
+pub trait CustomCmd<'a>: Sized {
     /**
      * Actions may need to create a memento before their first execution.
      * This is the goal of the operation that should be overridden.
@@ -163,9 +163,9 @@ pub trait CustomCmd {
      */
     fn execution(&mut self);
 
-    // fn as_command(&self) -> Command<Self> {
-    //     Command::new(self)
-    // }
+    fn as_command(&'a mut self) -> Command<'a, Self> {
+        Command::new(self)
+    }
 }
 
-pub trait UndoableCommand: CustomCmd + Undoable {}
+pub trait UndoableCommand<'a>: CustomCmd<'a> + Undoable {}

@@ -29,7 +29,7 @@ impl<'a> AnonCmd<'a> {
     }
 }
 
-impl<'a> CustomCmd for AnonCmd<'a> {
+impl<'a, 'b> CustomCmd<'a> for AnonCmd<'b> {
     fn execution(&mut self) {
         (self.exec)()
     }

@@ -35,7 +35,7 @@ impl StubCmd {
     }
 }
 
-impl CustomCmd<'_> for StubCmd {
+impl CustomCmd for StubCmd {
     fn execution(&mut self) {
         self.exec += 1;
     }
@@ -47,18 +47,13 @@ impl CustomCmd<'_> for StubCmd {
 
 
 mod command {
-    use crate::command::{CmdStatus, CustomCmd};
+    use crate::command::{CmdStatus, CustomCmd, Command};
     use super::StubCmd;
-
-    // fn create_stub<'a>() -> &'a Command<'a, StubCmd> {
-    //     let mut spec = StubCmd::default();
-    //     spec.as_command()
-    // }
 
     #[test]
     fn cando_default() {
         struct Cmd;
-        impl CustomCmd<'_> for Cmd {
+        impl CustomCmd for Cmd {
             fn execution(&mut self) {}
         }
         impl Cmd {
@@ -77,40 +72,35 @@ mod command {
 
     #[test]
     fn command_status_after_flush() {
-        let mut spec = StubCmd::default();
-        let mut cmd = spec.as_command();
+        let mut cmd = Command::new(StubCmd::default());
         cmd.flush();
         assert_eq!(cmd.get_status(), CmdStatus::Flushed);
     }
 
     #[test]
     fn command_cannot_do_it_when_flushed() {
-        let mut spec = StubCmd::default();
-        let mut cmd = spec.as_command();
+        let mut cmd = Command::new(StubCmd::default());
         cmd.flush();
         assert_eq!(cmd.execute(), false);
     }
 
     #[test]
     fn command_cannot_do_it_when_done() {
-        let mut spec = StubCmd::default();
-        let mut cmd = spec.as_command();
+        let mut cmd = Command::new(StubCmd::default());
         cmd.done();
         assert_eq!(cmd.execute(), false);
     }
 
     #[test]
     fn command_cannot_do_it_when_cancelled() {
-        let mut spec = StubCmd::default();
-        let mut cmd = spec.as_command();
+        let mut cmd = Command::new(StubCmd::default());
         cmd.cancel();
         assert_eq!(cmd.execute(), false);
     }
 
     #[test]
     fn command_cannot_do_it_when_cannot_do_and_created() {
-        let mut spec = StubCmd::default();
-        let mut cmd = spec.as_command();
+        let mut cmd = Command::new(StubCmd::default());
         cmd.child.can_do_value = false;
         assert_eq!(cmd.execute(), false);
     }
@@ -122,16 +112,14 @@ mod command {
 
     #[test]
     fn command_is_executed_when_do_it() {
-        let mut spec = StubCmd::default();
-        let mut cmd = spec.as_command();
+        let mut cmd = Command::new(StubCmd::default());
         cmd.execute();
         assert_eq!(cmd.get_status(), CmdStatus::Executed);
     }
 
     #[test]
     fn command_had_effect_when_done() {
-        let mut spec = StubCmd::default();
-        let mut cmd = spec.as_command();
+        let mut cmd = Command::new(StubCmd::default());
         cmd.done();
         assert_eq!(cmd.had_effect(), true);
     }
@@ -143,24 +131,21 @@ mod command {
 
     #[test]
     fn command_had_effect_when_not_done_and_cancelled() {
-        let mut spec = StubCmd::default();
-        let mut cmd = spec.as_command();
+        let mut cmd = Command::new(StubCmd::default());
         cmd.cancel();
         assert_eq!(cmd.had_effect(), false);
     }
 
     #[test]
     fn command_had_effect_when_not_done_and_flushed() {
-        let mut spec = StubCmd::default();
-        let mut cmd = spec.as_command();
+        let mut cmd = Command::new(StubCmd::default());
         cmd.flush();
         assert_eq!(cmd.had_effect(), false);
     }
 
     #[test]
     fn command_had_effect_when_not_done_and_executed() {
-        let mut spec = StubCmd::default();
-        let mut cmd = spec.as_command();
+        let mut cmd = Command::new(StubCmd::default());
         cmd.child.can_do_value = true;
         cmd.execute();
         assert_eq!(cmd.had_effect(), false);
@@ -168,8 +153,7 @@ mod command {
 
     #[test]
     fn command_not_done_when_flushed() {
-        let mut spec = StubCmd::default();
-        let mut cmd = spec.as_command();
+        let mut cmd = Command::new(StubCmd::default());
         cmd.flush();
         cmd.done();
         assert_eq!(cmd.get_status(), CmdStatus::Flushed);
@@ -177,8 +161,7 @@ mod command {
 
     #[test]
     fn command_not_done_when_cancelled() {
-        let mut spec = StubCmd::default();
-        let mut cmd = spec.as_command();
+        let mut cmd = Command::new(StubCmd::default());
         cmd.cancel();
         cmd.done();
         assert_eq!(cmd.get_status(), CmdStatus::Cancelled);
@@ -186,16 +169,14 @@ mod command {
 
     #[test]
     fn command_done_when_created() {
-        let mut spec = StubCmd::default();
-        let mut cmd = spec.as_command();
+        let mut cmd = Command::new(StubCmd::default());
         cmd.done();
         assert_eq!(cmd.get_status(), CmdStatus::Done);
     }
 
     #[test]
     fn command_done_when_executed() {
-        let mut spec = StubCmd::default();
-        let mut cmd = spec.as_command();
+        let mut cmd = Command::new(StubCmd::default());
         cmd.execute();
         cmd.done();
         assert_eq!(cmd.get_status(), CmdStatus::Done);
@@ -208,48 +189,42 @@ mod command {
 
     #[test]
        fn is_done_when_cancelled() {
-        let mut spec = StubCmd::default();
-        let mut cmd = spec.as_command();
+        let mut cmd = Command::new(StubCmd::default());
         cmd.cancel();
         assert_eq!(cmd.is_done(), false);
     }
 
     #[test]
        fn is_done_when_flushed() {
-        let mut spec = StubCmd::default();
-        let mut cmd = spec.as_command();
+        let mut cmd = Command::new(StubCmd::default());
         cmd.flush();
         assert_eq!(cmd.is_done(), false);
     }
 
     #[test]
        fn is_done_when_done() {
-        let mut spec = StubCmd::default();
-        let mut cmd = spec.as_command();
+        let mut cmd = Command::new(StubCmd::default());
         cmd.done();
         assert_eq!(cmd.is_done(), true);
     }
 
     #[test]
        fn is_done_when_executed() {
-        let mut spec = StubCmd::default();
-        let mut cmd = spec.as_command();
+        let mut cmd = Command::new(StubCmd::default());
         cmd.execute();
         assert_eq!(cmd.is_done(), false);
     }
 
     #[test]
        fn cancel() {
-        let mut spec = StubCmd::default();
-        let mut cmd = spec.as_command();
+        let mut cmd = Command::new(StubCmd::default());
         cmd.cancel();
         assert_eq!(cmd.get_status(), CmdStatus::Cancelled);
     }
 
     #[test]
        fn executed_two_times() {
-        let mut spec = StubCmd::default();
-        let mut cmd = spec.as_command();
+        let mut cmd = Command::new(StubCmd::default());
         cmd.execute();
         cmd.execute();
         assert_eq!(cmd.child.exec, 2);

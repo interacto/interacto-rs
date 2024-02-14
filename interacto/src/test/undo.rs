@@ -12,42 +12,43 @@
  * along with Interacto.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-mod undo {
-    use crate::{undohistory::UndoHistoryBase, undoble::Undoable, undo::Undo, command::CustomCmd};
-    use mockall::mock;
+use crate::{command::CustomCmd, undo::Undo, undoble::Undoable, undohistory::UndoHistoryBase};
+use mockall::mock;
 
-    mock! {
-        FakeHistory {}
-        impl UndoHistoryBase for FakeHistory {
-            fn undo(&self);
-            fn redo(&self);
-            fn clear(&self);
-            fn add(&self, undoable: Box<dyn Undoable>);
-            fn get_last_undo(&self) -> Option<&'static dyn Undoable>;
-            fn get_last_redo(&self) -> Option<Box<dyn Undoable + 'static>>;
-        }
+mock! {
+    FakeHistory {}
+    impl UndoHistoryBase for FakeHistory {
+        fn undo(&self);
+        fn redo(&self);
+        fn clear(&self);
+        fn add(&self, undoable: Box<dyn Undoable>);
+        fn get_last_undo(&self) -> Option<&'static dyn Undoable>;
+        fn get_last_redo(&self) -> Option<Box<dyn Undoable + 'static>>;
     }
-    mock! {
-        FakeUndoable {}
-        impl Undoable for FakeUndoable {
-            fn undo(&mut self);
-            fn redo(&mut self);
-            fn get_undo_name(&self) -> String;
-        }
-    }
-
-    #[test]
-    fn cannot_do() {
-        let mut collector = MockFakeHistory::new();
-        collector.expect_get_last_undo().returning(|| None);
-        assert_eq!(Undo::new(Box::new(collector)).as_command().can_execute(), false);
-    }
-
-    // #[test]
-    // fn with_undoable() {
-    //     let mut collector = MockFakeHistory::new();
-    //     let undoable: MockFakeUndoable = MockFakeUndoable::new();
-    //     collector.expect_get_last_undo().returning(|| Some(&undoable));
-    //     assert_eq!(Undo::new(Box::new(collector)).as_command().can_execute(), true);
-    // }
 }
+mock! {
+    FakeUndoable {}
+    impl Undoable for FakeUndoable {
+        fn undo(&mut self);
+        fn redo(&mut self);
+        fn get_undo_name(&self) -> String;
+    }
+}
+
+#[test]
+fn cannot_do() {
+    let mut collector = MockFakeHistory::new();
+    collector.expect_get_last_undo().returning(|| None);
+    assert_eq!(
+        Undo::new(Box::new(collector)).as_command().can_execute(),
+        false
+    );
+}
+
+// #[test]
+// fn with_undoable() {
+//     let mut collector = MockFakeHistory::new();
+//     let undoable: MockFakeUndoable = MockFakeUndoable::new();
+//     collector.expect_get_last_undo().returning(|| Some(&undoable));
+//     assert_eq!(Undo::new(Box::new(collector)).as_command().can_execute(), true);
+// }

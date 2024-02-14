@@ -14,6 +14,9 @@
 pub mod command;
 pub mod undoble;
 pub mod anoncmd;
+pub mod undohistory;
+pub mod undo;
+pub mod linearhistory;
 
 #[cfg(test)]
 mod test;

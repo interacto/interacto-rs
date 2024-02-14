@@ -8,4 +8,6 @@ edition = "2021"
 [dependencies]
 
 [dev-dependencies]
+mockall = "0.11.4"
+mockall_double = "0.3.0"
 # s_test_fixture = "0.1.8"

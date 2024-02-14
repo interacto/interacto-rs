@@ -13,3 +13,4 @@
  */
 mod command;
 mod anoncmd;
+mod undo;
